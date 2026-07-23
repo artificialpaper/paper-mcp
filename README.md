@@ -1,67 +1,112 @@
-# paper-mcp
+# Paper MCP (`paper-mcp`)
 
-> **Model Context Protocol (MCP) server for the Paper ecosystem.**
+> Model Context Protocol (MCP) Desktop Bridge for Claude Desktop and Cursor IDE.
 
-Exposes Paper AI tools, resources, and prompt templates via the [MCP standard](https://modelcontextprotocol.io/) for use with Claude Desktop, Cursor, and other MCP-compatible clients.
+`paper-mcp` exposes tools registered in `paper-tools` to desktop AI applications (Claude Desktop, Cursor IDE, Sourcegraph Cody) over the Model Context Protocol (MCP) standard using JSON-RPC over stdio or HTTP transports.
 
-## Structure
+---
+
+## Role in the Ecosystem
+
+```
+Claude Desktop / Cursor IDE (MCP Client)
+                  |
+                  | JSON-RPC 2.0 (stdio)
+                  v
+              paper-mcp (FastMCP Server)
+                  |
+                  | Tool Import & Translation Bridge
+                  v
+             paper-tools Engine
+```
+
+- **What it owns:** FastMCP server bootstrap, MCP tool array translation, prompt template exposure, and desktop client connection profiles.
+- **What it does NOT do:** `paper-mcp` does not re-implement tool logic; it wraps `paper-tools`.
+
+---
+
+## Key Features
+
+- **Standard MCP Protocol Support:** Implements official Model Context Protocol (MCP) JSON-RPC spec.
+- **Automatic Tool Export:** Directly exposes tools registered in `paper-tools` without duplication.
+- **Claude Desktop Integration:** Native compatibility with Claude Desktop via stdio integration.
+- **Cursor IDE Integration:** Works seamlessly as a custom MCP tool server inside Cursor.
+- **Prompt & Resource Exposure:** Exposes Paper prompt templates and memory resources to desktop clients.
+
+---
+
+## Repository Structure
 
 ```
 paper-mcp/
 ├── app/
-│   ├── server/     ← MCP server (JSON-RPC over stdio)
-│   ├── tools/      ← Tool definitions (generate, call, memory, execute)
-│   ├── resources/  ← Resource definitions (config, registry, stats)
-│   └── prompts/    ← Prompt templates (voice agent, call summary, tool selection)
-├── tests/
+│   ├── server.py                # FastMCP server application entry point
+│   ├── tools.py                 # paper-tools to MCP tool translation bridge
+│   ├── prompts.py               # Prompt templates bridge
+│   └── resources.py             # Resource endpoints bridge
+├── tests/                       # Unit tests
+├── pyproject.toml               # Package configuration
 └── README.md
 ```
 
-## MCP Capabilities
+---
 
-### Tools
-| Tool | Description |
-|---|---|
-| `paper_generate` | Generate text via Paper AI core |
-| `paper_call` | Initiate a voice call |
-| `paper_memory_search` | Search memory stores |
-| `paper_tool_execute` | Execute a registered tool |
+## Quickstart & Setup
 
-### Resources
-| URI | Description |
-|---|---|
-| `paper://config/services` | Service configuration |
-| `paper://tools/registry` | Registered tool list |
-| `paper://memory/stats` | Memory store statistics |
-
-### Prompts
-| Name | Description |
-|---|---|
-| `voice_agent_system` | System prompt for voice agents |
-| `call_summary` | Structured call summary generator |
-| `tool_selection` | Tool selection assistant |
-
-## Usage
+### Installation
 
 ```bash
-# Run as MCP server (stdio transport)
-python -m app.server
+# Clone repository
+git clone https://github.com/artificialpaper/paper-mcp.git
+cd paper-mcp
+
+# Setup virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
+pip install -e .
 ```
 
-### Claude Desktop Config
+---
+
+## Configuring Claude Desktop
+
+To connect `paper-mcp` to Claude Desktop, edit your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "paper": {
-      "command": "python",
+      "command": "/path/to/paper-mcp/.venv/bin/python",
       "args": ["-m", "app.server"],
-      "cwd": "/path/to/paper-mcp"
+      "env": {
+        "PAPER_CORE_HOST": "localhost:50051"
+      }
     }
   }
 }
 ```
 
+---
+
+## Testing
+
+```bash
+# Run test suite
+pytest tests/
+```
+
+---
+
+## Related Repositories
+
+- [paper-tools](https://github.com/artificialpaper/paper-tools) - Tool Registry & Execution Engine
+- [paper-core](https://github.com/artificialpaper/paper-core) - Central LLM Inference Gateway
+- [paper-docs](https://github.com/artificialpaper/paper-docs) - Official Ecosystem Documentation Portal
+
+---
+
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
