@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paper-mcp"
+version = "0.1.0"
+description = "Model Context Protocol (MCP) JSON-RPC Bridge for Paper AI Ecosystem"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.12"
+dependencies = [
+    "paper-common",
+    "paper-proto",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.3.0",
+    "grpcio>=1.63.0",
+]
+
+[tool.setuptools.package-dir]
+"paper_mcp" = "app"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

@@ -1,0 +1,14 @@
+LICENSE
+README.md
+pyproject.toml
+app/__init__.py
+app/prompts/__init__.py
+app/resources/__init__.py
+app/server/__init__.py
+app/tools/__init__.py
+paper_mcp.egg-info/PKG-INFO
+paper_mcp.egg-info/SOURCES.txt
+paper_mcp.egg-info/dependency_links.txt
+paper_mcp.egg-info/requires.txt
+paper_mcp.egg-info/top_level.txt
+tests/test_mcp.py
